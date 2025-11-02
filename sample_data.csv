@@ -1,0 +1,52 @@
+date,revenue,customers,orders,region,product_category,satisfaction_score
+2024-01-01,15000,125,98,North,Electronics,4.5
+2024-01-02,18000,145,112,South,Electronics,4.7
+2024-01-03,16000,130,105,North,Home & Garden,4.3
+2024-01-04,21000,165,135,East,Electronics,4.8
+2024-01-05,19000,155,120,West,Clothing,4.6
+2024-01-06,14000,115,92,North,Home & Garden,4.2
+2024-01-07,22000,175,142,South,Electronics,4.9
+2024-01-08,17000,140,108,East,Clothing,4.4
+2024-01-09,20000,160,128,West,Electronics,4.7
+2024-01-10,16500,135,102,North,Clothing,4.5
+2024-01-11,23000,185,150,South,Electronics,4.8
+2024-01-12,18500,148,115,East,Home & Garden,4.6
+2024-01-13,19500,158,122,West,Electronics,4.7
+2024-01-14,15500,128,95,North,Clothing,4.3
+2024-01-15,24000,195,158,South,Electronics,4.9
+2024-01-16,17500,142,110,East,Home & Garden,4.5
+2024-01-17,20500,168,132,West,Electronics,4.8
+2024-01-18,16000,132,100,North,Clothing,4.4
+2024-01-19,25000,205,165,South,Electronics,5.0
+2024-01-20,18000,145,112,East,Home & Garden,4.6
+2024-01-21,21000,172,138,West,Electronics,4.7
+2024-01-22,15000,122,90,North,Clothing,4.2
+2024-01-23,26000,215,175,South,Electronics,4.9
+2024-01-24,19000,152,118,East,Home & Garden,4.5
+2024-01-25,22000,178,145,West,Electronics,4.8
+2024-01-26,16500,135,98,North,Clothing,4.4
+2024-01-27,27000,225,182,South,Electronics,5.0
+2024-01-28,19500,155,120,East,Home & Garden,4.6
+2024-01-29,23000,188,152,West,Electronics,4.8
+2024-01-30,17000,138,105,North,Clothing,4.3
+2024-01-31,28000,235,190,South,Electronics,4.9
+2024-02-01,20000,162,125,East,Home & Garden,4.7
+2024-02-02,24000,195,160,West,Electronics,4.8
+2024-02-03,17500,142,108,North,Clothing,4.4
+2024-02-04,29000,245,198,South,Electronics,5.0
+2024-02-05,21000,168,130,East,Home & Garden,4.6
+2024-02-06,25000,202,165,West,Electronics,4.9
+2024-02-07,18000,145,110,North,Clothing,4.5
+2024-02-08,30000,255,205,South,Electronics,4.9
+2024-02-09,22000,175,135,East,Home & Garden,4.7
+2024-02-10,26000,210,172,West,Electronics,4.8
+2024-02-11,18500,148,112,North,Clothing,4.4
+2024-02-12,31000,265,215,South,Electronics,5.0
+2024-02-13,23000,182,140,East,Home & Garden,4.6
+2024-02-14,27000,218,178,West,Electronics,4.9
+2024-02-15,19000,152,115,North,Clothing,4.5
+2024-02-16,32000,275,222,South,Electronics,4.9
+2024-02-17,24000,190,148,East,Home & Garden,4.7
+2024-02-18,28000,225,185,West,Electronics,4.8
+2024-02-19,19500,155,118,North,Clothing,4.4
+2024-02-20,33000,285,230,South,Electronics,5.0
