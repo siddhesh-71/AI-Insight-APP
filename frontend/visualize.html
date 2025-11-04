@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Data Visualizations - AI Data Insights</title>
+    <link rel="stylesheet" href="css/main.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-brand">
+                <i class="fas fa-brain"></i>
+                <span>AI Data Insights</span>
+            </div>
+            <div class="nav-links">
+                <a href="upload.html" class="nav-link">
+                    <i class="fas fa-upload"></i> Upload & Clean
+                </a>
+                <a href="visualize.html" class="nav-link active">
+                    <i class="fas fa-chart-bar"></i> Visualizations
+                </a>
+                <a href="ai-insights.html" class="nav-link">
+                    <i class="fas fa-lightbulb"></i> AI Insights
+                </a>
+            </div>
+            <div class="nav-status">
+                <span id="datasetIndicator" class="status-indicator">No Dataset</span>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Page Container -->
+    <div class="page-container">
+        <div class="page-header">
+            <h1><i class="fas fa-chart-bar"></i> Data Visualizations</h1>
+            <p>Explore your data through interactive charts and graphs</p>
+        </div>
+
+        <!-- Chart Recommendations -->
+        <section class="card">
+            <div class="card-header">
+                <i class="fas fa-magic"></i>
+                <h2>AI-Recommended Charts</h2>
+            </div>
+            <div class="card-body">
+                <button onclick="getChartRecommendations()" class="btn btn-success mb-3">
+                    <i class="fas fa-wand-magic-sparkles"></i> Generate Chart Recommendations
+                </button>
+                <div id="chartRecommendations" class="recommendations-grid"></div>
+            </div>
+        </section>
+
+        <!-- Statistical Visualizations -->
+        <section class="card">
+            <div class="card-header">
+                <i class="fas fa-chart-line"></i>
+                <h2>Statistical Analysis</h2>
+            </div>
+            <div class="card-body">
+                <button onclick="runStatisticalAnalysis()" class="btn btn-primary mb-3">
+                    <i class="fas fa-play"></i> Run Analysis
+                </button>
+                
+                <div class="tabs">
+                    <button class="tab-btn active" onclick="switchTab('correlations')">
+                        <i class="fas fa-link"></i> Correlations
+                    </button>
+                    <button class="tab-btn" onclick="switchTab('trends')">
+                        <i class="fas fa-chart-line"></i> Trends
+                    </button>
+                    <button class="tab-btn" onclick="switchTab('outliers')">
+                        <i class="fas fa-exclamation-triangle"></i> Outliers
+                    </button>
+                    <button class="tab-btn" onclick="switchTab('distributions')">
+                        <i class="fas fa-chart-area"></i> Distributions
+                    </button>
+                </div>
+
+                <div class="tab-content">
+                    <div id="correlations" class="tab-pane active"></div>
+                    <div id="trends" class="tab-pane"></div>
+                    <div id="outliers" class="tab-pane"></div>
+                    <div id="distributions" class="tab-pane"></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Visual Chart Previews -->
+        <section class="card">
+            <div class="card-header">
+                <i class="fas fa-images"></i>
+                <h2>Chart Visualization Previews</h2>
+            </div>
+            <div class="card-body">
+                <div id="chartPreviews" class="chart-previews-grid">
+                    <div class="chart-preview-card">
+                        <div class="chart-icon-large"><i class="fas fa-chart-bar"></i></div>
+                        <h4>Bar Charts</h4>
+                        <p>Best for comparing categories</p>
+                    </div>
+                    <div class="chart-preview-card">
+                        <div class="chart-icon-large"><i class="fas fa-chart-line"></i></div>
+                        <h4>Line Charts</h4>
+                        <p>Perfect for trends over time</p>
+                    </div>
+                    <div class="chart-preview-card">
+                        <div class="chart-icon-large"><i class="fas fa-chart-scatter"></i></div>
+                        <h4>Scatter Plots</h4>
+                        <p>Ideal for correlation analysis</p>
+                    </div>
+                    <div class="chart-preview-card">
+                        <div class="chart-icon-large"><i class="fas fa-chart-pie"></i></div>
+                        <h4>Pie Charts</h4>
+                        <p>Great for showing proportions</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- Loading Spinner -->
+    <div class="loading-overlay" id="loadingOverlay" style="display: none;">
+        <div class="spinner"></div>
+        <p>Analyzing your data...</p>
+    </div>
+
+    <script src="js/shared.js"></script>
+    <script src="js/visualize.js"></script>
+</body>
+</html>

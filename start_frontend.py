@@ -24,6 +24,6 @@ if __name__ == "__main__":
     with socketserver.TCPServer(("", PORT), MyHTTPRequestHandler) as httpd:
         print(f"Frontend server running at http://localhost:{PORT}")
         print(f"Serving files from: {os.path.join(os.getcwd(), DIRECTORY)}")
-        print(f"Open http://localhost:{PORT}/insights.html in your browser")
+        print(f"Open http://localhost:{PORT}/upload.html in your browser")
         print("Press CTRL+C to stop the server")
         httpd.serve_forever()

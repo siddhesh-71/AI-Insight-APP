@@ -30,8 +30,9 @@ class DataAnalyzer:
                 upper_bound = Q3 + threshold * IQR
                 col_outliers = self.data[(self.data[col] < lower_bound) | (self.data[col] > upper_bound)]
             else:  # z-score
-                z_scores = np.abs(stats.zscore(self.data[col].dropna()))
-                col_outliers = self.data[z_scores > threshold]
+                col_data = self.data[col].dropna()
+                z_scores = np.abs(stats.zscore(col_data.values))  # pyright: ignore[reportCallIssue, reportArgumentType]
+                col_outliers = self.data.loc[col_data.index][z_scores > threshold]
             
             if len(col_outliers) > 0:
                 outliers[col] = {
@@ -47,7 +48,7 @@ class DataAnalyzer:
         if len(self.numeric_cols) < 2:
             return []
         
-        corr_matrix = self.data[self.numeric_cols].corr()
+        corr_matrix = self.data[self.numeric_cols].corr(method='pearson')  # pyright: ignore[reportCallIssue]
         strong_corrs = []
         
         for i in range(len(corr_matrix.columns)):
@@ -112,7 +113,7 @@ class DataAnalyzer:
         
         # Apply clustering
         if method == 'kmeans':
-            clusterer = KMeans(n_clusters=n_clusters, random_state=42, n_init=10)
+            clusterer = KMeans(n_clusters=n_clusters, random_state=42, n_init='auto')
         else:  # dbscan
             clusterer = DBSCAN(eps=0.5, min_samples=5)
         
@@ -135,7 +136,7 @@ class DataAnalyzer:
             
             # Add mean values for each feature
             for col in self.numeric_cols:
-                if col in cluster_data.columns:
+                if col in X.columns:
                     stats_dict[f'{col}_mean'] = round(cluster_data[col].mean(), 2)
             
             cluster_stats.append(stats_dict)
@@ -158,7 +159,7 @@ class DataAnalyzer:
         if len(X) < 10:
             return {'error': 'Insufficient data for anomaly detection'}
         
-        iso_forest = IsolationForest(contamination=contamination, random_state=42)
+        iso_forest = IsolationForest(contamination='auto' if contamination is None else contamination, random_state=42)  # pyright: ignore[reportArgumentType]
         predictions = iso_forest.fit_predict(X)
         
         anomaly_indices = np.where(predictions == -1)[0]

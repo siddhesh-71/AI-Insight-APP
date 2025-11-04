@@ -3,6 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from fastapi.staticfiles import StaticFiles
 import pandas as pd
+import numpy as np
 import json
 import os
 from typing import Optional
@@ -228,6 +229,136 @@ async def delete_dataset(dataset_id: str):
     
     del uploaded_datasets[dataset_id]
     return {"message": f"Dataset {dataset_id} deleted successfully"}
+
+
+@app.get("/dataset/{dataset_id}/summary")
+async def get_dataset_summary(dataset_id: str):
+    """Get detailed dataset summary including data quality metrics"""
+    if dataset_id not in uploaded_datasets:
+        raise HTTPException(status_code=404, detail="Dataset not found")
+    
+    try:
+        df = uploaded_datasets[dataset_id]
+        
+        # Calculate detailed statistics
+        summary = {
+            "basic_info": {
+                "total_rows": len(df),
+                "total_columns": len(df.columns),
+                "memory_usage": float(df.memory_usage(deep=True).sum() / 1024 / 1024),  # MB
+            },
+            "columns": [],
+            "missing_data": {
+                "total_missing": int(df.isnull().sum().sum()),
+                "columns_with_missing": df.isnull().sum()[df.isnull().sum() > 0].to_dict()
+            },
+            "data_types": df.dtypes.astype(str).to_dict(),
+            "duplicates": {
+                "total_duplicates": int(df.duplicated().sum()),
+                "unique_rows": int(len(df.drop_duplicates()))
+            }
+        }
+        
+        # Column-level details
+        for col in df.columns:
+            col_info = {
+                "name": col,
+                "type": str(df[col].dtype),
+                "missing_count": int(df[col].isnull().sum()),
+                "missing_percentage": round(df[col].isnull().sum() / len(df) * 100, 2),
+                "unique_count": int(df[col].nunique())
+            }
+            
+            # Add statistics for numeric columns
+            if pd.api.types.is_numeric_dtype(df[col]):
+                col_info["statistics"] = {
+                    "mean": float(df[col].mean()) if not df[col].isnull().all() else None,
+                    "median": float(df[col].median()) if not df[col].isnull().all() else None,
+                    "min": float(df[col].min()) if not df[col].isnull().all() else None,
+                    "max": float(df[col].max()) if not df[col].isnull().all() else None,
+                    "std": float(df[col].std()) if not df[col].isnull().all() else None
+                }
+            else:
+                # For categorical columns
+                col_info["top_values"] = df[col].value_counts().head(5).to_dict()
+            
+            summary["columns"].append(col_info)
+        
+        return summary
+    
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Summary error: {str(e)}")
+
+
+@app.post("/dataset/{dataset_id}/clean")
+async def clean_dataset(
+    dataset_id: str,
+    drop_duplicates: bool = Form(False),
+    fill_numeric_missing: str = Form("none"),  # none, mean, median, zero
+    drop_missing_threshold: float = Form(0.0)  # Drop columns with > X% missing
+):
+    """Clean dataset by removing duplicates and handling missing values"""
+    if dataset_id not in uploaded_datasets:
+        raise HTTPException(status_code=404, detail="Dataset not found")
+    
+    try:
+        df = uploaded_datasets[dataset_id].copy()
+        cleaning_report = {
+            "original_shape": df.shape,
+            "actions_taken": []
+        }
+        
+        # Drop duplicates
+        if drop_duplicates:
+            before = len(df)
+            df = df.drop_duplicates()
+            removed = before - len(df)
+            if removed > 0:
+                cleaning_report["actions_taken"].append(
+                    f"Removed {removed} duplicate rows"
+                )
+        
+        # Drop columns with high missing percentage
+        if drop_missing_threshold > 0:
+            cols_to_drop = []
+            for col in df.columns:
+                missing_pct = df[col].isnull().sum() / len(df) * 100
+                if missing_pct > drop_missing_threshold:
+                    cols_to_drop.append(col)
+            
+            if cols_to_drop:
+                df = df.drop(columns=cols_to_drop)
+                cleaning_report["actions_taken"].append(
+                    f"Dropped {len(cols_to_drop)} columns with >{drop_missing_threshold}% missing: {cols_to_drop}"
+                )
+        
+        # Fill missing numeric values
+        if fill_numeric_missing != "none":
+            numeric_cols = df.select_dtypes(include=[np.number]).columns
+            for col in numeric_cols:
+                if df[col].isnull().any():
+                    if fill_numeric_missing == "mean":
+                        df[col].fillna(df[col].mean(), inplace=True)
+                    elif fill_numeric_missing == "median":
+                        df[col].fillna(df[col].median(), inplace=True)
+                    elif fill_numeric_missing == "zero":
+                        df[col].fillna(0, inplace=True)
+            
+            cleaning_report["actions_taken"].append(
+                f"Filled missing numeric values using {fill_numeric_missing}"
+            )
+        
+        # Update the dataset
+        uploaded_datasets[dataset_id] = df
+        
+        cleaning_report["final_shape"] = df.shape
+        cleaning_report["rows_removed"] = cleaning_report["original_shape"][0] - df.shape[0]
+        cleaning_report["columns_removed"] = cleaning_report["original_shape"][1] - df.shape[1]
+        
+        return cleaning_report
+    
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Cleaning error: {str(e)}")
 
 
 if __name__ == "__main__":

@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html class="dark" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Upload & Clean Data - AI Data Insights</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com" rel="preconnect"/>
+    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+    <script>
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#1193d4",
+                        "background-light": "#f6f7f8",
+                        "background-dark": "#101c22",
+                    },
+                    fontFamily: {
+                        "display": ["Inter", "sans-serif"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                },
+            },
+        }
+    </script>
+    <style>
+        .material-symbols-outlined {
+            font-variation-settings:
+                'FILL' 0,
+                'wght' 400,
+                'GRAD' 0,
+                'opsz' 24
+        }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark font-display">
+    <!-- Navigation Sidebar -->
+    <div class="relative flex h-auto min-h-screen w-full flex-col">
+        <div class="layout-container flex h-full grow flex-row">
+            <aside class="flex-shrink-0 w-64 bg-[#111618] p-4">
+                <div class="flex flex-col gap-8">
+                    <div class="flex items-center gap-3">
+                        <div class="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-10" style='background-image: url("https://cdn-icons-png.flaticon.com/512/3135/3135715.png");'></div>
+                        <div class="flex flex-col">
+                            <h1 class="text-white text-base font-medium leading-normal">Data Analyst</h1>
+                            <p class="text-[#9db0b9] text-sm font-normal leading-normal">AI Insights</p>
+                        </div>
+                    </div>
+                    <div class="flex flex-col gap-2">
+                        <a href="upload.html" class="flex items-center gap-3 px-3 py-2 rounded-lg bg-primary">
+                            <span class="material-symbols-outlined text-white">upload_file</span>
+                            <p class="text-white text-sm font-medium leading-normal">Upload & Clean</p>
+                        </a>
+                        <a href="visualize.html" class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-primary/20 cursor-pointer">
+                            <span class="material-symbols-outlined text-white">bar_chart_4_bars</span>
+                            <p class="text-white text-sm font-medium leading-normal">Visualize</p>
+                        </a>
+                        <a href="ai-insights.html" class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-primary/20 cursor-pointer">
+                            <span class="material-symbols-outlined text-white">lightbulb</span>
+                            <p class="text-white text-sm font-medium leading-normal">AI Insights</p>
+                        </a>
+                    </div>
+                    <div id="datasetIndicatorSidebar" class="mt-auto">
+                        <div class="bg-red-500/10 border border-red-500 rounded-lg px-3 py-2">
+                            <p class="text-red-500 text-xs font-medium">No Dataset</p>
+                        </div>
+                    </div>
+                </div>
+            </aside>
+
+            <main class="flex-1 p-10">
+                <div class="max-w-6xl mx-auto">
+                    <div class="flex flex-col gap-8">
+                        <!-- Page Header -->
+                        <div class="flex flex-col gap-3">
+                            <p class="text-zinc-900 dark:text-white text-4xl font-black leading-tight tracking-[-0.033em]">Upload & Clean Data</p>
+                            <p class="text-zinc-500 dark:text-[#9db0b9] text-base font-normal leading-normal">Upload your CSV or JSON file and perform data cleaning operations.</p>
+                        </div>
+
+                        <!-- API Key Setup -->
+                        <div class="bg-white dark:bg-[#111618] p-6 rounded-xl">
+                            <h2 class="text-xl font-bold text-zinc-900 dark:text-white mb-4 flex items-center gap-2">
+                                <span class="material-symbols-outlined">key</span>
+                                Hugging Face API Configuration
+                            </h2>
+                            <div class="flex flex-col gap-4">
+                                <div class="flex gap-3">
+                                    <input type="password" id="apiKey" placeholder="hf_..." class="flex-1 rounded-md border-zinc-300 dark:border-zinc-600 bg-white dark:bg-[#283339] text-zinc-900 dark:text-white focus:ring-primary focus:border-primary">
+                                    <button onclick="setApiKey()" class="px-6 py-2 bg-primary text-white rounded-lg font-semibold hover:bg-primary/90 transition-colors">
+                                        Set API Key
+                                    </button>
+                                </div>
+                                <p class="text-sm text-zinc-500 dark:text-[#9db0b9]">
+                                    Get your free API key from <a href="https://huggingface.co/settings/tokens" target="_blank" class="text-primary hover:underline">Hugging Face</a>
+                                </p>
+                                <div id="apiStatus" class="text-sm"></div>
+                            </div>
+                        </div>
+
+                        <!-- File Upload -->
+                        <div class="flex flex-col items-center gap-6 rounded-xl border-2 border-dashed border-zinc-300 dark:border-[#3b4b54] px-6 py-14 hover:border-primary dark:hover:border-primary transition-colors cursor-pointer" id="uploadArea">
+                            <div class="flex max-w-[480px] flex-col items-center gap-2">
+                                <span class="material-symbols-outlined text-5xl text-primary">cloud_upload</span>
+                                <p class="text-zinc-900 dark:text-white text-lg font-bold leading-tight tracking-[-0.015em] max-w-[480px] text-center">Drag & drop your files here</p>
+                                <p class="text-zinc-500 dark:text-white text-sm font-normal leading-normal max-w-[480px] text-center">or</p>
+                            </div>
+                            <label for="fileInput" class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 px-4 bg-primary text-white text-sm font-bold leading-normal tracking-[0.015em] hover:bg-primary/90 transition-colors">
+                                <span class="truncate">Browse Files</span>
+                            </label>
+                            <input type="file" id="fileInput" accept=".csv,.json" style="display: none;">
+                        </div>
+                        <div id="uploadStatus" class="text-sm"></div>
+
+                        <!-- Data Preview & Cleaning -->
+                        <div id="cleaningSection" class="bg-white dark:bg-[#111618] p-6 rounded-xl" style="display: none;">
+                            <h2 class="text-2xl font-bold text-zinc-900 dark:text-white mb-6 flex items-center gap-2">
+                                <span class="material-symbols-outlined">table</span>
+                                Data Preview & Cleaning
+                            </h2>
+                            
+                            <!-- Dataset Info -->
+                            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+                                <div class="bg-gradient-to-br from-blue-500/10 to-blue-600/10 border border-blue-500/20 rounded-lg p-4">
+                                    <div class="flex items-center gap-3">
+                                        <span class="material-symbols-outlined text-3xl text-blue-500">database</span>
+                                        <div>
+                                            <p class="text-xs text-zinc-500 dark:text-zinc-400">Total Rows</p>
+                                            <p class="text-2xl font-bold text-zinc-900 dark:text-white" id="totalRows">0</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="bg-gradient-to-br from-purple-500/10 to-purple-600/10 border border-purple-500/20 rounded-lg p-4">
+                                    <div class="flex items-center gap-3">
+                                        <span class="material-symbols-outlined text-3xl text-purple-500">view_column</span>
+                                        <div>
+                                            <p class="text-xs text-zinc-500 dark:text-zinc-400">Total Columns</p>
+                                            <p class="text-2xl font-bold text-zinc-900 dark:text-white" id="totalCols">0</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="bg-gradient-to-br from-orange-500/10 to-orange-600/10 border border-orange-500/20 rounded-lg p-4">
+                                    <div class="flex items-center gap-3">
+                                        <span class="material-symbols-outlined text-3xl text-orange-500">warning</span>
+                                        <div>
+                                            <p class="text-xs text-zinc-500 dark:text-zinc-400">Missing Values</p>
+                                            <p class="text-2xl font-bold text-zinc-900 dark:text-white" id="missingValues">0</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="bg-gradient-to-br from-green-500/10 to-green-600/10 border border-green-500/20 rounded-lg p-4">
+                                    <div class="flex items-center gap-3">
+                                        <span class="material-symbols-outlined text-3xl text-green-500">tag</span>
+                                        <div>
+                                            <p class="text-xs text-zinc-500 dark:text-zinc-400">Numeric Columns</p>
+                                            <p class="text-2xl font-bold text-zinc-900 dark:text-white" id="numericCols">0</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Data Table Preview -->
+                            <div class="mb-8">
+                                <h3 class="text-lg font-semibold text-zinc-800 dark:text-zinc-200 mb-4 flex items-center gap-2">
+                                    <span class="material-symbols-outlined">visibility</span>
+                                    Data Preview (First 10 Rows)
+                                </h3>
+                                <div id="previewTable" class="overflow-x-auto rounded-lg border border-zinc-300 dark:border-zinc-600"></div>
+                            </div>
+
+                            <!-- Data Quality Checks -->
+                            <div class="mb-8">
+                                <h3 class="text-lg font-semibold text-zinc-800 dark:text-zinc-200 mb-4 flex items-center gap-2">
+                                    <span class="material-symbols-outlined">check_circle</span>
+                                    Data Quality Checks
+                                </h3>
+                                <div id="qualityChecks" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4"></div>
+                            </div>
+
+                            <!-- Column Details -->
+                            <div class="mb-8">
+                                <h3 class="text-lg font-semibold text-zinc-800 dark:text-zinc-200 mb-4 flex items-center gap-2">
+                                    <span class="material-symbols-outlined">list</span>
+                                    Column Details
+                                </h3>
+                                <div id="columnDetails" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"></div>
+                            </div>
+
+                            <!-- Data Cleaning Controls -->
+                            <div class="border-t border-zinc-300 dark:border-zinc-600 pt-8 mb-8">
+                                <h3 class="text-lg font-semibold text-zinc-800 dark:text-zinc-200 mb-6 flex items-center gap-2">
+                                    <span class="material-symbols-outlined">cleaning_services</span>
+                                    Data Cleaning Options
+                                </h3>
+                                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                                    <div class="bg-gradient-to-br from-primary/5 to-primary/10 border border-primary/20 rounded-lg p-4">
+                                        <h4 class="text-base font-semibold text-zinc-800 dark:text-zinc-200 mb-3">Remove Duplicates</h4>
+                                        <label class="flex items-center gap-3 cursor-pointer">
+                                            <input type="checkbox" id="dropDuplicates" class="w-5 h-5 rounded border-zinc-300 dark:border-zinc-600 text-primary focus:ring-primary">
+                                            <span class="text-sm text-zinc-600 dark:text-zinc-400">Remove duplicate rows</span>
+                                        </label>
+                                        <p class="text-xs text-zinc-500 dark:text-zinc-500 mt-2">Removes rows that are exact duplicates</p>
+                                    </div>
+
+                                    <div class="bg-gradient-to-br from-primary/5 to-primary/10 border border-primary/20 rounded-lg p-4">
+                                        <h4 class="text-base font-semibold text-zinc-800 dark:text-zinc-200 mb-3">Handle Missing Values</h4>
+                                        <select id="fillNumeric" class="w-full rounded-md border-zinc-300 dark:border-zinc-600 bg-white dark:bg-[#283339] text-zinc-900 dark:text-white text-sm focus:ring-primary focus:border-primary">
+                                            <option value="none">Keep as is</option>
+                                            <option value="mean">Fill with Mean</option>
+                                            <option value="median">Fill with Median</option>
+                                            <option value="zero">Fill with Zero</option>
+                                        </select>
+                                        <p class="text-xs text-zinc-500 dark:text-zinc-500 mt-2">Choose how to handle missing numbers</p>
+                                    </div>
+
+                                    <div class="bg-gradient-to-br from-primary/5 to-primary/10 border border-primary/20 rounded-lg p-4">
+                                        <h4 class="text-base font-semibold text-zinc-800 dark:text-zinc-200 mb-3">Drop Columns (%)</h4>
+                                        <input type="number" id="dropMissingThreshold" class="w-full rounded-md border-zinc-300 dark:border-zinc-600 bg-white dark:bg-[#283339] text-zinc-900 dark:text-white text-sm focus:ring-primary focus:border-primary" min="0" max="100" value="0" step="5">
+                                        <p class="text-xs text-zinc-500 dark:text-zinc-500 mt-2">Drop columns with &gt; this % missing (0 = keep all)</p>
+                                    </div>
+                                </div>
+
+                                <div class="flex gap-3 mt-6">
+                                    <button onclick="applyDataCleaning()" class="flex items-center gap-2 px-6 py-3 bg-primary text-white rounded-lg font-semibold hover:bg-primary/90 transition-colors">
+                                        <span class="material-symbols-outlined">auto_fix_high</span>
+                                        Clean Data
+                                    </button>
+                                    <button onclick="resetCleaningOptions()" class="flex items-center gap-2 px-6 py-3 bg-zinc-200 dark:bg-zinc-700 text-zinc-900 dark:text-white rounded-lg font-semibold hover:bg-zinc-300 dark:hover:bg-zinc-600 transition-colors">
+                                        <span class="material-symbols-outlined">restart_alt</span>
+                                        Reset Options
+                                    </button>
+                                </div>
+                                <div id="cleaningStatus" class="mt-4 text-sm"></div>
+                            </div>
+
+                            <!-- Next Steps -->
+                            <div class="flex justify-end gap-3">
+                                <button onclick="showStatisticalSummary()" class="flex items-center gap-2 px-6 py-3 bg-zinc-200 dark:bg-zinc-700 text-zinc-900 dark:text-white rounded-lg font-semibold hover:bg-zinc-300 dark:hover:bg-zinc-600 transition-colors">
+                                    <span class="material-symbols-outlined">query_stats</span>
+                                    Statistical Summary
+                                </button>
+                                <button onclick="window.location.href='visualize.html'" class="flex items-center gap-2 px-6 py-3 bg-primary text-white rounded-lg font-semibold hover:bg-primary/90 transition-colors">
+                                    Proceed to Visualizations
+                                    <span class="material-symbols-outlined">arrow_forward</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- Loading Spinner -->
+    <div id="loadingOverlay" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 9999; align-items: center; justify-content: center;">
+        <div class="flex flex-col items-center gap-4">
+            <div class="animate-spin rounded-full h-16 w-16 border-4 border-primary border-t-transparent"></div>
+            <p class="text-white text-lg font-semibold">Processing your data...</p>
+        </div>
+    </div>
+
+    <script src="js/shared.js"></script>
+    <script src="js/upload.js"></script>
+    <script>
+        // Update sidebar dataset indicator
+        function updateSidebarIndicator() {
+            const datasetId = getStoredData(STORAGE_KEYS.DATASET_ID);
+            const sidebar = document.getElementById('datasetIndicatorSidebar');
+            if (datasetId) {
+                sidebar.innerHTML = `
+                    <div class="bg-green-500/10 border border-green-500 rounded-lg px-3 py-2">
+                        <p class="text-green-500 text-xs font-medium">Dataset Loaded</p>
+                    </div>
+                `;
+            } else {
+                sidebar.innerHTML = `
+                    <div class="bg-red-500/10 border border-red-500 rounded-lg px-3 py-2">
+                        <p class="text-red-500 text-xs font-medium">No Dataset</p>
+                    </div>
+                `;
+            }
+        }
+        
+        // Override updateDatasetIndicator to also update sidebar
+        const originalUpdate = updateDatasetIndicator;
+        updateDatasetIndicator = function() {
+            if (originalUpdate) originalUpdate();
+            updateSidebarIndicator();
+        };
+        
+        // Initialize on load
+        document.addEventListener('DOMContentLoaded', updateSidebarIndicator);
+    </script>
+</body>
+</html>
